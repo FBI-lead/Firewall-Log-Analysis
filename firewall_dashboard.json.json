@@ -1,0 +1,102 @@
+{
+  "title": "FIREWALL LOG ANALYSIS",
+  "description": "This dashboard provides visibility into firewall events ingested from CSV logs. It is designed to help SOC analysts quickly identify suspicious traffic patterns, repeated blocked attempts, and potential port scan behavior.",
+  "inputs": {
+    "input_global_trp": {
+      "options": {
+        "defaultValue": "-24h@h,now",
+        "token": "global_time"
+      },
+      "title": "Global Time Range",
+      "type": "input.timerange"
+    }
+  },
+  "defaults": {
+    "dataSources": {
+      "ds.search": {
+        "options": {
+          "queryParameters": {
+            "earliest": "$global_time.earliest$",
+            "latest": "$global_time.latest$"
+          }
+        }
+      }
+    },
+    "visualizations": {
+      "global": {
+        "showProgressBar": true
+      }
+    }
+  },
+  "visualizations": {
+    "viz_omA31GkE": {
+      "dataSources": {
+        "primary": "ds_VUcrVeg2"
+      },
+      "options": {
+        "count": 20,
+        "dataOverlayMode": "none",
+        "drilldown": "none",
+        "showInternalFields": false,
+        "showRowNumbers": false
+      },
+      "title": "FIREWALL",
+      "type": "splunk.table"
+    }
+  },
+  "dataSources": {
+    "ds_VUcrVeg2": {
+      "name": "FIREWALL - Table search",
+      "options": {
+        "query": "index=firewall sourcetype=csv action=\"blocked\" | stats count  by src_ip , dest_port | where count > 10 | sort - count",
+        "queryParameters": {
+          "earliest": "0",
+          "sampleRatio": 1
+        }
+      },
+      "type": "ds.search"
+    }
+  },
+  "layout": {
+    "globalInputs": [
+      "input_global_trp"
+    ],
+    "layoutDefinitions": {
+      "layout_1": {
+        "options": {
+          "height": 960,
+          "width": 1440
+        },
+        "structure": [
+          {
+            "item": "viz_omA31GkE",
+            "position": {
+              "h": 250,
+              "w": 1440,
+              "x": 0,
+              "y": 0
+            },
+            "type": "block"
+          }
+        ],
+        "type": "grid"
+      }
+    },
+    "options": {},
+    "tabs": {
+      "items": [
+        {
+          "label": "New tab",
+          "layoutId": "layout_1"
+        }
+      ]
+    }
+  },
+  "applicationProperties": {
+    "hideEdit": false,
+    "hideExport": false,
+    "hideViewModeActionMenu": false,
+    "collapseNavigation": false,
+    "downsampleVisualizations": true
+  }
+}
