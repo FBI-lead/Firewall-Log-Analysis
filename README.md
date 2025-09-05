@@ -17,6 +17,7 @@ This project demonstrates how to detect suspicious firewall activity using Splun
 - Top blocked IPs:
   ```spl
   index=firewall sourcetype=csv action="blocked"
-  | stats count by src_ip
+  | stats count by src_ip , dest_port
+  | where count > 10
   | sort - count
 
